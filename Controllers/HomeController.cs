@@ -10,6 +10,10 @@ public class HomeController : Controller
     {
         return View();
     }
+    public IActionResult Room1()
+    {
+        return View();
+    }
 
     public IActionResult Privacy()
     {
