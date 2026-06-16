@@ -13,7 +13,8 @@
     // Symbolalfabetet gar fran sista bokstaven till forsta, rad for rad i serpentin.
     var alphabetRows = new[]
     {
-        new[] { ("\u2302", "\u00D6"), ("\u25CC", "\u00C4"), ("\u27DF", "\u00C5"), ("\u2298", "Z"), ("\u2739", "Y"), ("\u2B22", "X") },
+        new[] { ("\u2302", "\u00D6"), ("\u25CC", "\u00C4"), ("\u27DF", "\u00C5"), ("\u2298", "Z"), ("\u2739", "Y"), ("\u2B22",
+"X") },
         new[] { ("\u25EB", "R"), ("\u25C7", "S"), ("\u2B21", "T"), ("\u25B5", "U"), ("\u232C", "V"), ("\u2311", "W") },
         new[] { ("\u2301", "Q"), ("\u25CE", "P"), ("\u2727", "O"), ("\u25C9", "N"), ("\u27D0", "M"), ("\u27E1", "L") },
         new[] { ("\u2726", "F"), ("\u25B3", "G"), ("\u27C1", "H"), ("\u25C8", "I"), ("\u29EB", "J"), ("\u260D", "K") },
@@ -30,6 +31,7 @@
         color: #d9fbff;
     }
 
+   
     .navbar,
     .footer {
         display: none;
@@ -405,7 +407,8 @@
             </div>
 
             <aside class="airlock" aria-label="Last luftsluss">
-                <div class="lock-panel @(isSolved ? "unlocked" : "")" title="@(isSolved ? "Uppl\u00E5st" : "L\u00E5st")">
+                <div class="lock-panel @(isSolved ? "unlocked" : "")"
+                     title="@(isSolved ? "Uppl\u00E5st" : "L\u00E5st")">
                     <span class="status-light" aria-hidden="true"></span>
                 </div>
             </aside>
@@ -414,116 +417,122 @@
         <div class="terminal" id="terminal">
             <div class="terminal-panel">
                 <h2>Luftsluss l&aring;st</h2>
-                <p>Terminalen visar ett kort meddelande fr&aring;n rymden. &Ouml;vers&auml;tt symbolerna f&ouml;r att &ouml;ppna luftslussen.</p>
+                <p>Terminalen visar ett kort meddelande fr&aring;n rymden. &Ouml;vers&auml;tt symbolerna f&ouml;r att
+                    &ouml;ppna luftslussen.</p>
 
-                <p class="encrypted-message">@encryptedMessage</p>
+                    <p class="encrypted-message">@encryptedMessage</p>
 
-                <h3>Symbolalfabet</h3>
-                <div class="alphabet-grid">
-                    @for (var rowIndex = 0; rowIndex < alphabetRows.Length; rowIndex++)
-                    {
-                        <div class="alphabet-row">
-                            @for (var columnIndex = 0; columnIndex < alphabetRows[rowIndex].Length; columnIndex++)
-                            {
-                                var cell = alphabetRows[rowIndex][columnIndex];
-                                var isVisibleFromStart = cell.Item2 == "K";
-                                var shouldRevealFirstHint = hintCount >= 1 && cell.Item2 == "O";
-                                var shouldRevealSecondHint = hintCount >= 2 && cell.Item2 == "M";
-                                var shouldRevealThirdHint = hintCount >= 3 && cell.Item2 == "E";
-                                var shouldRevealFourthHint = hintCount >= 4 && cell.Item2 == "T";
-                                var isRevealed = isVisibleFromStart || shouldRevealFirstHint || shouldRevealSecondHint || shouldRevealThirdHint || shouldRevealFourthHint;
-
-                                <span class="symbol-cell @(isRevealed ? "revealed" : "")" data-letter="@cell.Item2">
-                                    <span>@cell.Item1</span>
-                                    @if (isRevealed)
-                                    {
-                                        <span class="symbol-letter">@cell.Item2</span>
-                                    }
-                                </span>
-                            }
-                        </div>
-                    }
-                </div>
-
-                <form class="answer-form" asp-controller="Home" asp-action="Room1" asp-fragment="terminal" method="post">
-                    <input type="hidden" name="hintCount" value="@hintCount" />
-
-                    <label for="playerAnswer">Skriv svaret h&auml;r</label>
-                    <input id="playerAnswer" name="playerAnswer" value="@playerAnswer" autocomplete="off" placeholder="Skriv det oversatta meddelandet" />
-
-                    @if (!string.IsNullOrWhiteSpace(errorMessage))
-                    {
-                        <p class="error-message">@errorMessage</p>
-                    }
-
-                    @if (isSolved)
-                    {
-                        <p class="success-message">Koden godk&auml;nd. Luftslussen &auml;r uppl&aring;st.</p>
-                    }
-
-                    <div class="button-row">
-                        <button class="room-button" type="submit" name="actionType" value="answer">&Ouml;ppna luftsluss</button>
-
-                        @if (hintCount < 4 && !isSolved)
+                    <h3>Symbolalfabet</h3>
+                    <div class="alphabet-grid">
+                        @for (var rowIndex = 0; rowIndex < alphabetRows.Length; rowIndex++)
                         {
-                            <button class="room-button secondary" id="hintButton" type="button" data-hint-count="@hintCount">
-                                Avsl&ouml;ja ledtr&aring;d (@(4 - hintCount) kvar)
-                            </button>
+                            <div class="alphabet-row">
+                                @for (var columnIndex = 0; columnIndex < alphabetRows[rowIndex].Length; columnIndex++)
+                                {
+                                    var cell = alphabetRows[rowIndex][columnIndex];
+                                    var isVisibleFromStart = cell.Item2 == "K";
+                                    var shouldRevealFirstHint = hintCount >= 1 && cell.Item2 == "O";
+                                    var shouldRevealSecondHint = hintCount >= 2 && cell.Item2 == "M";
+                                    var shouldRevealThirdHint = hintCount >= 3 && cell.Item2 == "E";
+                                    var shouldRevealFourthHint = hintCount >= 4 && cell.Item2 == "T";
+                                    var isRevealed = isVisibleFromStart || shouldRevealFirstHint || shouldRevealSecondHint ||
+                            shouldRevealThirdHint || shouldRevealFourthHint;
+
+                                    <span class="symbol-cell @(isRevealed ? "revealed" : "")" data-letter="@cell.Item2">
+                                        <span>@cell.Item1</span>
+                                        @if (isRevealed)
+                                        {
+                                            <span class="symbol-letter">@cell.Item2</span>
+                                        }
+                                    </span>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <form class="answer-form" asp-controller="Home" asp-action="Room1" asp-fragment="terminal"
+                          method="post">
+                        <input type="hidden" name="hintCount" value="@hintCount" />
+
+                        <label for="playerAnswer">Skriv svaret h&auml;r</label>
+                        <input id="playerAnswer" name="playerAnswer" value="@playerAnswer" autocomplete="off"
+                               placeholder="Skriv det oversatta meddelandet" />
+
+                        @if (!string.IsNullOrWhiteSpace(errorMessage))
+                        {
+                            <p class="error-message">@errorMessage</p>
                         }
 
                         @if (isSolved)
                         {
-                            <a class="room-button" href="http://room2.runasp.net?from=room1&token=sector9-clear">
-                                G&aring; vidare till Rum 2
-                            </a>
+                            <p class="success-message">Koden godk&auml;nd. Luftslussen &auml;r uppl&aring;st.</p>
                         }
+
+                        <div class="button-row">
+                            <button class="room-button" type="submit" name="actionType" value="answer">&Ouml;ppna
+                                luftsluss</button>
+
+                                @if (hintCount < 4 && !isSolved)
+                                {
+                                    <button class="room-button secondary" id="hintButton" type="button"
+                                            data-hint-count="@hintCount">
+                                        Avsl&ouml;ja ledtr&aring;d (@(4 - hintCount) kvar)
+                                    </button>
+                                }
+
+                                @if (isSolved)
+                                {
+                                    <a id="goToRoom2" class="btn btn-primary">
+                                        Room 2
+                                    </a>
+                                }
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
 
-@section Scripts {
-    <script>
-        const hintButton = document.getElementById("hintButton");
-        const hintInput = document.querySelector('input[name="hintCount"]');
-        const hintLetters = ["O", "M", "E", "T"];
+        @section Scripts {
+            <script>
+                const hintButton = document.getElementById("hintButton");
+                const hintInput = document.querySelector('input[name="hintCount"]');
+                const hintLetters = ["O", "M", "E", "T"];
 
-        function revealLetter(letter) {
-            const cell = document.querySelector(`.symbol-cell[data-letter="${letter}"]`);
+                function revealLetter(letter) {
+                    const cell = document.querySelector(`.symbol-cell[data-letter="${letter}"]`);
 
-            if (!cell || cell.querySelector(".symbol-letter")) {
-                return;
-            }
+                    if (!cell || cell.querySelector(".symbol-letter")) {
+                        return;
+                    }
 
-            const label = document.createElement("span");
-            label.className = "symbol-letter";
-            label.textContent = letter;
-            cell.appendChild(label);
-            cell.classList.add("revealed");
-        }
-
-        if (hintButton && hintInput) {
-            hintButton.addEventListener("click", () => {
-                let hintCount = Number(hintInput.value || "0");
-
-                if (hintCount >= hintLetters.length) {
-                    return;
+                    const label = document.createElement("span");
+                    label.className = "symbol-letter";
+                    label.textContent = letter;
+                    cell.appendChild(label);
+                    cell.classList.add("revealed");
                 }
 
-                revealLetter(hintLetters[hintCount]);
-                hintCount += 1;
-                hintInput.value = hintCount;
+                if (hintButton && hintInput) {
+                    hintButton.addEventListener("click", () => {
+                        let hintCount = Number(hintInput.value || "0");
 
-                const remaining = hintLetters.length - hintCount;
+                        if (hintCount >= hintLetters.length) {
+                            return;
+                        }
 
-                if (remaining === 0) {
-                    hintButton.remove();
-                } else {
-                    hintButton.textContent = `Avsl\u00F6ja ledtr\u00E5d (${remaining} kvar)`;
+                        revealLetter(hintLetters[hintCount]);
+                        hintCount += 1;
+                        hintInput.value = hintCount;
+
+                        const remaining = hintLetters.length - hintCount;
+
+                        if (remaining === 0) {
+                            hintButton.remove();
+                        } else {
+                            hintButton.textContent = `Avsl\u00F6ja ledtr\u00E5d (${remaining} kvar)`;
+                        }
+                    });
                 }
-            });
+            </script>
         }
-    </script>
-}
