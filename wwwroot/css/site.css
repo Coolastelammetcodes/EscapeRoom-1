@@ -21,6 +21,426 @@ body {
   margin-bottom: 60px;
 }
 
+body.home-space {
+  min-height: 100vh;
+  margin-bottom: 0;
+  background: #000;
+  color: #f6fbff;
+}
+
+.home-space header {
+  display: none;
+}
+
+.home-space .navbar {
+  background: rgba(0, 0, 0, 0.88) !important;
+  border-bottom-color: rgba(68, 255, 193, 0.2) !important;
+  box-shadow: 0 0.5rem 2rem rgba(0, 255, 185, 0.08);
+}
+
+.home-space .navbar-brand,
+.home-space .nav-link {
+  color: #eafff8 !important;
+}
+
+.home-space .navbar-toggler {
+  border-color: rgba(68, 255, 193, 0.35);
+}
+
+.home-space .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+.home-space .container {
+  max-width: none;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.home-space main {
+  padding-bottom: 0 !important;
+}
+
+.home-space .footer {
+  display: none;
+}
+
+.space-landing {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  padding: 6rem 1.5rem;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(36, 255, 174, 0.18), transparent 19rem),
+    radial-gradient(circle at 74% 28%, rgba(94, 121, 255, 0.16), transparent 18rem),
+    linear-gradient(180deg, #010105 0%, #030412 52%, #000 100%);
+}
+
+.space-landing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(68, 255, 193, 0.8) 0 1px, transparent 1.6px);
+  background-position: 0 0, 42px 66px;
+  background-size: 96px 96px, 142px 142px;
+  opacity: 0.42;
+}
+
+.space-landing::after {
+  content: "";
+  position: absolute;
+  inset: auto -10% -30% -10%;
+  height: 45%;
+  z-index: -2;
+  background: radial-gradient(ellipse at center, rgba(39, 255, 182, 0.24), transparent 66%);
+  filter: blur(18px);
+}
+
+.star-field {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-repeat: repeat;
+  pointer-events: none;
+}
+
+.star-field-one {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.72) 0 1px, transparent 1.4px);
+  background-size: 180px 180px;
+  transform: rotate(8deg) scale(1.1);
+  opacity: 0.35;
+}
+
+.star-field-two {
+  background-image: radial-gradient(circle, rgba(121, 255, 219, 0.74) 0 1px, transparent 1.4px);
+  background-position: 80px 30px;
+  background-size: 260px 260px;
+  opacity: 0.28;
+}
+
+.planet {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.planet-outer {
+  top: 11%;
+  right: 9%;
+  width: min(18vw, 15rem);
+  aspect-ratio: 1;
+  background:
+    radial-gradient(circle at 32% 28%, #effffb 0 4%, transparent 5%),
+    radial-gradient(circle at 36% 36%, #6dffe1 0, #219c9b 42%, #10214f 74%);
+  box-shadow: 0 0 4rem rgba(54, 255, 203, 0.28);
+}
+
+.planet-inner {
+  bottom: 12%;
+  left: 8%;
+  width: min(13vw, 10rem);
+  aspect-ratio: 1;
+  background:
+    linear-gradient(135deg, transparent 43%, rgba(255, 255, 255, 0.32) 44% 48%, transparent 49%),
+    radial-gradient(circle at 30% 24%, #ccfffb, #6d5cff 42%, #24105e 78%);
+  box-shadow: 0 0 3.5rem rgba(109, 92, 255, 0.28);
+}
+
+.ufo {
+  position: absolute;
+  top: 18%;
+  left: 13%;
+  width: clamp(8.5rem, 18vw, 16rem);
+  height: clamp(4rem, 8vw, 7rem);
+  transform: rotate(-8deg);
+  pointer-events: none;
+}
+
+.ufo-glow {
+  position: absolute;
+  left: 24%;
+  right: 24%;
+  top: 44%;
+  height: 10rem;
+  background: linear-gradient(180deg, rgba(95, 255, 204, 0.42), transparent);
+  clip-path: polygon(26% 0, 74% 0, 100% 100%, 0 100%);
+  filter: blur(2px);
+}
+
+.ufo-dome {
+  position: absolute;
+  left: 30%;
+  top: 5%;
+  width: 40%;
+  height: 48%;
+  border-radius: 50% 50% 42% 42%;
+  background: linear-gradient(180deg, rgba(219, 255, 250, 0.95), rgba(54, 255, 203, 0.32));
+  border: 1px solid rgba(219, 255, 250, 0.6);
+}
+
+.ufo-body {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 17%;
+  height: 42%;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #d5fff5, #2ac2b0 48%, #0b3f5c 100%);
+  box-shadow: 0 0 2.5rem rgba(65, 255, 200, 0.34);
+}
+
+.ufo-lights {
+  position: absolute;
+  left: 24%;
+  right: 24%;
+  bottom: 26%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.ufo-lights span {
+  width: 0.55rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #eaff68;
+  box-shadow: 0 0 1rem #eaff68;
+}
+
+.alien-orbit {
+  position: absolute;
+  right: 15%;
+  bottom: 16%;
+  width: clamp(8rem, 16vw, 13rem);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(68, 255, 193, 0.26);
+  border-radius: 50%;
+  box-shadow: inset 0 0 2rem rgba(68, 255, 193, 0.12);
+}
+
+.alien-head {
+  position: relative;
+  width: 60%;
+  aspect-ratio: 0.82;
+  border-radius: 48% 48% 54% 54%;
+  background: radial-gradient(circle at 48% 18%, #dafff0 0 4%, #74ff9d 26%, #0c9b69 76%);
+  box-shadow: 0 0 2.6rem rgba(86, 255, 157, 0.38);
+}
+
+.alien-eye {
+  position: absolute;
+  top: 37%;
+  width: 25%;
+  height: 18%;
+  border-radius: 60% 15% 60% 15%;
+  background: #05090f;
+  box-shadow: 0 0 0.7rem rgba(0, 0, 0, 0.75);
+}
+
+.alien-eye-left {
+  left: 18%;
+  transform: rotate(18deg);
+}
+
+.alien-eye-right {
+  right: 18%;
+  transform: rotate(-18deg) scaleX(-1);
+}
+
+.alien-mouth {
+  position: absolute;
+  left: 39%;
+  bottom: 26%;
+  width: 22%;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.space-content {
+  width: min(100%, 44rem);
+  text-align: center;
+  z-index: 1;
+}
+
+.space-kicker {
+  margin-bottom: 0.8rem;
+  color: #7dffcf;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.space-content h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 6rem;
+  font-weight: 800;
+  line-height: 0.95;
+  text-shadow:
+    0 0 1.2rem rgba(74, 255, 203, 0.5),
+    0 0 4rem rgba(74, 113, 255, 0.4);
+}
+
+.space-copy {
+  max-width: 37rem;
+  margin: 1.4rem auto 2rem;
+  color: #cce2e0;
+  font-size: 1.2rem;
+  line-height: 1.65;
+}
+
+.space-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.9rem;
+}
+
+.space-start-btn,
+.space-instructions-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 11rem;
+  min-height: 3.25rem;
+  padding: 0.85rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.space-start-btn {
+  border: 1px solid rgba(125, 255, 207, 0.8);
+  color: #03110d;
+  background: linear-gradient(135deg, #8dffd6, #eaff68);
+  box-shadow: 0 0 2.2rem rgba(93, 255, 201, 0.28);
+}
+
+.space-instructions-btn {
+  border: 1px solid rgba(125, 255, 207, 0.58);
+  color: #eafff8;
+  background: rgba(3, 17, 13, 0.7);
+  box-shadow: inset 0 0 1rem rgba(93, 255, 201, 0.12), 0 0 1.4rem rgba(93, 255, 201, 0.12);
+}
+
+.space-start-btn:hover,
+.space-start-btn:focus,
+.space-instructions-btn:hover,
+.space-instructions-btn:focus {
+  color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 0 3rem rgba(234, 255, 104, 0.34);
+}
+
+.space-instructions-btn:hover,
+.space-instructions-btn:focus {
+  color: #f6fbff;
+  background: rgba(18, 75, 61, 0.84);
+}
+
+.space-instructions {
+  border: 1px solid rgba(125, 255, 207, 0.35);
+  border-radius: 0.5rem;
+  color: #eafff8;
+  background: #05070d;
+  box-shadow: 0 0 4rem rgba(68, 255, 193, 0.18);
+}
+
+.space-instructions .modal-header {
+  border-bottom-color: rgba(125, 255, 207, 0.22);
+}
+
+.space-instructions .btn-close {
+  position: relative;
+  z-index: 2;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0.75rem;
+  margin: -0.75rem -0.75rem -0.75rem auto;
+}
+
+.space-instructions .modal-title {
+  color: #7dffcf;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.space-instructions ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.space-instructions li {
+  margin: 0.65rem 0;
+  line-height: 1.5;
+}
+
+@media (max-width: 767px) {
+  .space-landing {
+    min-height: 100vh;
+    padding: 5.5rem 1rem 4rem;
+    place-items: start center;
+  }
+
+  .ufo {
+    top: 12%;
+    left: 4%;
+    opacity: 0.62;
+  }
+
+  .planet-outer {
+    right: -2.5rem;
+    width: 8rem;
+  }
+
+  .planet-inner {
+    bottom: 5%;
+    left: -2rem;
+    width: 7rem;
+  }
+
+  .alien-orbit {
+    right: 5%;
+    bottom: 7%;
+    width: 7rem;
+    opacity: 0.78;
+  }
+
+  .space-content {
+    margin-top: 4rem;
+  }
+
+  .space-content h1 {
+    font-size: 3.4rem;
+    line-height: 1;
+  }
+
+  .space-copy {
+    font-size: 1rem;
+  }
+
+  .space-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .space-instructions .btn-close {
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0.9rem;
+  }
+}
+
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;
