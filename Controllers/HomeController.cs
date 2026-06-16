@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using web.Models;
+using EscapeRoom_1.Models;
 
-namespace web.Controllers;
+namespace EscapeRoom_1.Controllers;
 
 public class HomeController : Controller
 {

@@ -1,4 +1,4 @@
-namespace web.Models;
+namespace EscapeRoom_1.Models;
 
 public class ErrorViewModel
 {
