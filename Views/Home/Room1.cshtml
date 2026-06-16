@@ -1,13 +1,529 @@
 @{
-    ViewData["Title"] = "Room1";
+    ViewData["Title"] = "Rum 1: Kryokammaren";
+
+    var hintCount = ViewBag.HintCount as int? ?? 0;
+    var isSolved = ViewBag.IsSolved as bool? ?? false;
+    var playerAnswer = ViewBag.PlayerAnswer as string ?? "";
+    var errorMessage = ViewBag.ErrorMessage as string;
+
+    // Pusseltext: meddelandet betyder "komet".
+    // Byt svaret i HomeController om ni andrar pusslets losning.
+    var encryptedMessage = "\u260D \u2727 \u27D0 \u25BD \u2B21";
+
+    // Symbolalfabetet gar fran sista bokstaven till forsta, rad for rad i serpentin.
+    var alphabetRows = new[]
+    {
+        new[] { ("\u2302", "\u00D6"), ("\u25CC", "\u00C4"), ("\u27DF", "\u00C5"), ("\u2298", "Z"), ("\u2739", "Y"), ("\u2B22", "X") },
+        new[] { ("\u25EB", "R"), ("\u25C7", "S"), ("\u2B21", "T"), ("\u25B5", "U"), ("\u232C", "V"), ("\u2311", "W") },
+        new[] { ("\u2301", "Q"), ("\u25CE", "P"), ("\u2727", "O"), ("\u25C9", "N"), ("\u27D0", "M"), ("\u27E1", "L") },
+        new[] { ("\u2726", "F"), ("\u25B3", "G"), ("\u27C1", "H"), ("\u25C8", "I"), ("\u29EB", "J"), ("\u260D", "K") },
+        new[] { ("\u25BD", "E"), ("\u27E0", "D"), ("\u25A3", "C"), ("\u2316", "B"), ("\u235F", "A") }
+    };
 }
 
-<div class="text-center">
-    <h1 class="display-4">Välkommen till det första rummet</h1>
-    <button>Game</button>
+<style>
+    body {
+        background:
+            radial-gradient(circle at 90% 20%, rgba(23, 214, 217, 0.18), transparent 28rem),
+            radial-gradient(circle at 12% 82%, rgba(79, 255, 209, 0.08), transparent 26rem),
+            #020611;
+        color: #d9fbff;
+    }
 
-    <a href="http://room2.runasp.net" class="btn btn-primary">
-        Room 2
-    </a>
+    .navbar,
+    .footer {
+        display: none;
+    }
 
-</div>
+    .container {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    main {
+        padding: 0 !important;
+    }
+
+    .cryo-room {
+        min-height: 100vh;
+        padding: 1.2rem;
+        position: relative;
+        background-image:
+            radial-gradient(circle, rgba(255, 255, 255, 0.38) 1px, transparent 1px),
+            radial-gradient(circle, rgba(74, 246, 255, 0.28) 1px, transparent 1px);
+        background-size: 86px 108px, 137px 151px;
+        overflow-x: hidden;
+    }
+
+    .station-frame {
+        width: min(1380px, calc(100vw - 2.4rem));
+        min-height: calc(100vh - 2.4rem);
+        margin: 0 auto;
+        border: 1px solid rgba(156, 218, 224, 0.32);
+        border-radius: 8px;
+        background:
+            linear-gradient(rgba(121, 196, 203, 0.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(121, 196, 203, 0.045) 1px, transparent 1px),
+            radial-gradient(circle at 50% 18%, rgba(99, 234, 224, 0.20), transparent 22rem),
+            linear-gradient(180deg, rgba(10, 24, 31, 0.92), rgba(23, 38, 45, 0.92));
+        background-size: 86px 86px, 86px 86px, auto, auto;
+        box-shadow: 0 0 55px rgba(52, 255, 235, 0.08), inset 0 0 90px rgba(0, 0, 0, 0.52);
+        padding: clamp(1.2rem, 3vw, 2.8rem);
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: clamp(1rem, 2.2vw, 2rem);
+    }
+
+    .room-header {
+        text-align: center;
+    }
+
+    .sector-label {
+        color: #7dff7a;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin: 0 0 0.65rem;
+    }
+
+    .room-title {
+        color: #e4fbff;
+        font-size: clamp(2.4rem, 6vw, 4.8rem);
+        font-weight: 800;
+        letter-spacing: 0;
+        margin: 0;
+        text-shadow: 0 0 22px rgba(137, 255, 244, 0.30);
+    }
+
+    .room-scene {
+        display: grid;
+        grid-template-columns: 1fr minmax(260px, 370px);
+        gap: clamp(1.2rem, 2vw, 2rem);
+        align-items: center;
+    }
+
+    .window-bank {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: clamp(1rem, 2vw, 1.7rem);
+    }
+
+    .space-window {
+        min-height: clamp(170px, 26vw, 260px);
+        border: 14px solid rgba(27, 44, 54, 0.95);
+        border-radius: 8px;
+        outline: 1px solid rgba(178, 221, 226, 0.24);
+        position: relative;
+        overflow: hidden;
+        background:
+            radial-gradient(circle at 82% 82%, #7df6ff 0 2%, #59cce0 3% 16%, #246981 17% 26%, transparent 27%),
+            radial-gradient(circle at 24% 28%, #ffffff 0 1px, transparent 2px),
+            radial-gradient(circle at 75% 42%, #4dffff 0 1px, transparent 2px),
+            radial-gradient(circle at 50% 72%, #ccd4da 0 1px, transparent 2px),
+            linear-gradient(160deg, #030813, #061323 75%, #041b22);
+        box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.65);
+    }
+
+    .space-window.second {
+        background:
+            radial-gradient(circle at 30% 42%, #ff6f86 0 2%, transparent 4%),
+            radial-gradient(circle at 24% 28%, #ffffff 0 1px, transparent 2px),
+            radial-gradient(circle at 75% 42%, #4dffff 0 1px, transparent 2px),
+            radial-gradient(circle at 50% 72%, #ccd4da 0 1px, transparent 2px),
+            linear-gradient(160deg, #030813, #061323 75%, #041b22);
+    }
+
+    .space-window::before,
+    .space-window::after {
+        content: "";
+        position: absolute;
+        inset: -20%;
+        background: rgba(190, 213, 223, 0.12);
+        transform: rotate(14deg);
+    }
+
+    .space-window::before {
+        width: 20%;
+        left: 34%;
+    }
+
+    .space-window::after {
+        height: 12%;
+        top: 27%;
+    }
+
+    .airlock {
+        min-height: clamp(360px, 52vw, 520px);
+        border: 3px solid rgba(68, 86, 94, 0.75);
+        background:
+            linear-gradient(90deg, transparent 48%, rgba(4, 12, 17, 0.78) 49%, rgba(4, 12, 17, 0.78) 52%, transparent 53%),
+            repeating-linear-gradient(0deg, transparent 0 64px, rgba(6, 20, 27, 0.28) 65px 67px),
+            linear-gradient(90deg, #66757b, #77848a 48%, #59666c 49%, #768188);
+        position: relative;
+        box-shadow: 0 16px 35px rgba(0, 0, 0, 0.35), inset 0 0 22px rgba(255, 255, 255, 0.08);
+    }
+
+    .airlock::before {
+        content: "";
+        position: absolute;
+        left: 10%;
+        top: 8%;
+        bottom: 8%;
+        width: 10px;
+        background:
+            radial-gradient(circle at center, #07121c 0 6px, transparent 7px) 0 0 / 10px 134px repeat-y;
+    }
+
+    .lock-panel {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 72px;
+        height: 72px;
+        transform: translate(-50%, -50%);
+        border: 1px solid rgba(255, 92, 116, 0.95);
+        border-radius: 50%;
+        background: rgba(2, 19, 18, 0.82);
+        display: grid;
+        place-items: center;
+        box-shadow: 0 0 18px rgba(255, 77, 98, 0.26), inset 0 0 18px rgba(0, 0, 0, 0.55);
+    }
+
+    .status-light {
+        display: block;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #ff667d;
+        box-shadow: 0 0 10px rgba(255, 102, 125, 0.95), 0 0 26px rgba(255, 102, 125, 0.55);
+    }
+
+    .lock-panel.unlocked {
+        border-color: rgba(125, 255, 215, 0.95);
+        box-shadow: 0 0 22px rgba(80, 255, 207, 0.45);
+    }
+
+    .lock-panel.unlocked .status-light {
+        background: #7dffd7;
+        box-shadow: 0 0 12px rgba(125, 255, 215, 0.95), 0 0 30px rgba(125, 255, 215, 0.65);
+    }
+
+    .terminal {
+        width: min(575px, 100%);
+        justify-self: center;
+        border: 1px solid rgba(74, 216, 225, 0.72);
+        border-radius: 8px;
+        background: rgba(2, 20, 24, 0.95);
+        padding: 1rem;
+        box-shadow: 0 0 30px rgba(38, 239, 224, 0.12), inset 0 0 18px rgba(0, 255, 204, 0.08);
+    }
+
+    .terminal-panel {
+        background: rgba(9, 42, 45, 0.74);
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    .terminal h2,
+    .terminal h3 {
+        color: #7dff7a;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        margin: 0 0 0.8rem;
+        font-weight: 800;
+    }
+
+    .terminal p {
+        color: #b9d7dc;
+    }
+
+    .encrypted-message {
+        color: #e9fffb;
+        background: #02070d;
+        border: 1px dashed rgba(115, 255, 216, 0.45);
+        padding: 0.85rem;
+        font-size: clamp(1.2rem, 3.8vw, 1.75rem);
+        line-height: 1.5;
+        word-spacing: 0.35rem;
+        margin-bottom: 1rem;
+    }
+
+    .alphabet-grid {
+        display: grid;
+        gap: 0.4rem;
+        margin-bottom: 1rem;
+    }
+
+    .alphabet-row {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(2rem, 1fr));
+        gap: 0.4rem;
+    }
+
+    .symbol-cell {
+        min-height: 2.35rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        border: 1px solid rgba(78, 226, 255, 0.30);
+        background: rgba(8, 30, 45, 0.92);
+        color: #9affea;
+        font-size: 1.2rem;
+        box-shadow: inset 0 0 12px rgba(57, 255, 219, 0.08);
+    }
+
+    .symbol-cell.revealed {
+        border-color: rgba(125, 255, 122, 0.85);
+        background: rgba(23, 70, 48, 0.95);
+        box-shadow: 0 0 14px rgba(125, 255, 122, 0.55);
+    }
+
+    .symbol-letter {
+        color: #061016;
+        background: #7dff7a;
+        border-radius: 4px;
+        padding: 0.1rem 0.35rem;
+        font-size: 0.95rem;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .answer-form {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .answer-form label {
+        color: #d9fbff;
+        font-weight: 700;
+    }
+
+    .answer-form input {
+        width: 100%;
+        border: 1px solid rgba(112, 255, 229, 0.7);
+        background: #02070d;
+        color: #d8fff8;
+        padding: 0.8rem;
+        border-radius: 4px;
+    }
+
+    .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+    }
+
+    .room-button {
+        border: 1px solid #73ffd8;
+        background: #06281f;
+        color: #aaffee;
+        padding: 0.75rem 1rem;
+        border-radius: 4px;
+        font-weight: 800;
+        text-decoration: none;
+        text-transform: uppercase;
+        box-shadow: 0 0 16px rgba(70, 255, 216, 0.18);
+    }
+
+    .room-button:hover {
+        color: #061016;
+        background: #73ffd8;
+    }
+
+    .room-button.secondary {
+        border-color: rgba(120, 200, 255, 0.65);
+        color: #b9e9ff;
+        background: #061527;
+    }
+
+    .error-message {
+        color: #ff98a5;
+        border: 1px solid rgba(255, 80, 80, 0.65);
+        background: rgba(60, 0, 0, 0.38);
+        padding: 0.7rem;
+        margin: 0;
+    }
+
+    .success-message {
+        color: #8dffd6;
+        border: 1px solid rgba(121, 255, 217, 0.8);
+        background: rgba(0, 70, 45, 0.35);
+        padding: 0.7rem;
+        margin: 0;
+    }
+
+    @@media (max-width: 900px) {
+        .station-frame {
+            min-height: auto;
+        }
+
+        .room-scene {
+            grid-template-columns: 1fr;
+        }
+
+        .airlock {
+            width: min(360px, 100%);
+            justify-self: center;
+        }
+    }
+
+    @@media (max-width: 620px) {
+        .cryo-room {
+            padding: 0.75rem;
+        }
+
+        .station-frame {
+            width: 100%;
+            padding: 1rem;
+        }
+
+        .window-bank {
+            grid-template-columns: 1fr;
+        }
+
+        .alphabet-row {
+            grid-template-columns: repeat(3, minmax(2.4rem, 1fr));
+        }
+
+        .button-row {
+            display: grid;
+        }
+    }
+</style>
+
+<section class="cryo-room">
+    <div class="station-frame">
+        <header class="room-header">
+            <p class="sector-label">Sector 9 / Kryosektion</p>
+            <h1 class="room-title">Rum 1: Kryokammaren</h1>
+        </header>
+
+        <div class="room-scene">
+            <div class="window-bank" aria-label="Fonster mot rymden">
+                <div class="space-window"></div>
+                <div class="space-window second"></div>
+            </div>
+
+            <aside class="airlock" aria-label="Last luftsluss">
+                <div class="lock-panel @(isSolved ? "unlocked" : "")" title="@(isSolved ? "Uppl\u00E5st" : "L\u00E5st")">
+                    <span class="status-light" aria-hidden="true"></span>
+                </div>
+            </aside>
+        </div>
+
+        <div class="terminal" id="terminal">
+            <div class="terminal-panel">
+                <h2>Luftsluss l&aring;st</h2>
+                <p>Terminalen visar ett kort meddelande fr&aring;n rymden. &Ouml;vers&auml;tt symbolerna f&ouml;r att &ouml;ppna luftslussen.</p>
+
+                <p class="encrypted-message">@encryptedMessage</p>
+
+                <h3>Symbolalfabet</h3>
+                <div class="alphabet-grid">
+                    @for (var rowIndex = 0; rowIndex < alphabetRows.Length; rowIndex++)
+                    {
+                        <div class="alphabet-row">
+                            @for (var columnIndex = 0; columnIndex < alphabetRows[rowIndex].Length; columnIndex++)
+                            {
+                                var cell = alphabetRows[rowIndex][columnIndex];
+                                var isVisibleFromStart = cell.Item2 == "K";
+                                var shouldRevealFirstHint = hintCount >= 1 && cell.Item2 == "O";
+                                var shouldRevealSecondHint = hintCount >= 2 && cell.Item2 == "M";
+                                var shouldRevealThirdHint = hintCount >= 3 && cell.Item2 == "E";
+                                var shouldRevealFourthHint = hintCount >= 4 && cell.Item2 == "T";
+                                var isRevealed = isVisibleFromStart || shouldRevealFirstHint || shouldRevealSecondHint || shouldRevealThirdHint || shouldRevealFourthHint;
+
+                                <span class="symbol-cell @(isRevealed ? "revealed" : "")" data-letter="@cell.Item2">
+                                    <span>@cell.Item1</span>
+                                    @if (isRevealed)
+                                    {
+                                        <span class="symbol-letter">@cell.Item2</span>
+                                    }
+                                </span>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <form class="answer-form" asp-controller="Home" asp-action="Room1" asp-fragment="terminal" method="post">
+                    <input type="hidden" name="hintCount" value="@hintCount" />
+
+                    <label for="playerAnswer">Skriv svaret h&auml;r</label>
+                    <input id="playerAnswer" name="playerAnswer" value="@playerAnswer" autocomplete="off" placeholder="Skriv det oversatta meddelandet" />
+
+                    @if (!string.IsNullOrWhiteSpace(errorMessage))
+                    {
+                        <p class="error-message">@errorMessage</p>
+                    }
+
+                    @if (isSolved)
+                    {
+                        <p class="success-message">Koden godk&auml;nd. Luftslussen &auml;r uppl&aring;st.</p>
+                    }
+
+                    <div class="button-row">
+                        <button class="room-button" type="submit" name="actionType" value="answer">&Ouml;ppna luftsluss</button>
+
+                        @if (hintCount < 4 && !isSolved)
+                        {
+                            <button class="room-button secondary" id="hintButton" type="button" data-hint-count="@hintCount">
+                                Avsl&ouml;ja ledtr&aring;d (@(4 - hintCount) kvar)
+                            </button>
+                        }
+
+                        @if (isSolved)
+                        {
+                            <a class="room-button" href="http://room2.runasp.net?from=room1&token=sector9-clear">
+                                G&aring; vidare till Rum 2
+                            </a>
+                        }
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        const hintButton = document.getElementById("hintButton");
+        const hintInput = document.querySelector('input[name="hintCount"]');
+        const hintLetters = ["O", "M", "E", "T"];
+
+        function revealLetter(letter) {
+            const cell = document.querySelector(`.symbol-cell[data-letter="${letter}"]`);
+
+            if (!cell || cell.querySelector(".symbol-letter")) {
+                return;
+            }
+
+            const label = document.createElement("span");
+            label.className = "symbol-letter";
+            label.textContent = letter;
+            cell.appendChild(label);
+            cell.classList.add("revealed");
+        }
+
+        if (hintButton && hintInput) {
+            hintButton.addEventListener("click", () => {
+                let hintCount = Number(hintInput.value || "0");
+
+                if (hintCount >= hintLetters.length) {
+                    return;
+                }
+
+                revealLetter(hintLetters[hintCount]);
+                hintCount += 1;
+                hintInput.value = hintCount;
+
+                const remaining = hintLetters.length - hintCount;
+
+                if (remaining === 0) {
+                    hintButton.remove();
+                } else {
+                    hintButton.textContent = `Avsl\u00F6ja ledtr\u00E5d (${remaining} kvar)`;
+                }
+            });
+        }
+    </script>
+}
