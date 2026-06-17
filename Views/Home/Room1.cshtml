@@ -5,10 +5,8 @@
     var isSolved = ViewBag.IsSolved as bool? ?? false;
     var playerAnswer = ViewBag.PlayerAnswer as string ?? "";
     var errorMessage = ViewBag.ErrorMessage as string;
-
-    // Pusseltext: meddelandet betyder "komet".
-    // Byt svaret i HomeController om ni andrar pusslets losning.
-    var encryptedMessage = "\u260D \u2727 \u27D0 \u25BD \u2B21";
+    var revealedLetters = ((ViewBag.RevealedLetters as string) ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
+    var secretWord = ViewBag.SecretWord as string ?? "komet";
 
     // Symbolalfabetet gar fran sista bokstaven till forsta, rad for rad i serpentin.
     var alphabetRows = new[]
@@ -20,6 +18,13 @@
         new[] { ("\u2726", "F"), ("\u25B3", "G"), ("\u27C1", "H"), ("\u25C8", "I"), ("\u29EB", "J"), ("\u260D", "K") },
         new[] { ("\u25BD", "E"), ("\u27E0", "D"), ("\u25A3", "C"), ("\u2316", "B"), ("\u235F", "A") }
     };
+
+    var symbolByLetter = alphabetRows
+        .SelectMany(row => row)
+        .ToDictionary(cell => cell.Item2, cell => cell.Item1);
+
+    var encryptedMessage = string.Join(" ", secretWord.ToUpperInvariant().Select(letter => symbolByLetter[letter.ToString()]));
+    var secretLetters = string.Join(",", secretWord.ToUpperInvariant().Distinct());
 }
 
 <style>
@@ -430,13 +435,9 @@
                                 @for (var columnIndex = 0; columnIndex < alphabetRows[rowIndex].Length; columnIndex++)
                                 {
                                     var cell = alphabetRows[rowIndex][columnIndex];
-                                    var isVisibleFromStart = cell.Item2 == "K";
-                                    var shouldRevealFirstHint = hintCount >= 1 && cell.Item2 == "O";
-                                    var shouldRevealSecondHint = hintCount >= 2 && cell.Item2 == "M";
-                                    var shouldRevealThirdHint = hintCount >= 3 && cell.Item2 == "E";
-                                    var shouldRevealFourthHint = hintCount >= 4 && cell.Item2 == "T";
-                                    var isRevealed = isVisibleFromStart || shouldRevealFirstHint || shouldRevealSecondHint ||
-                            shouldRevealThirdHint || shouldRevealFourthHint;
+                                    var isVisibleFromStart = cell.Item2 == "\u00C5";
+                                    var isRandomHint = Array.IndexOf(revealedLetters, cell.Item2) >= 0;
+                                    var isRevealed = isVisibleFromStart || isRandomHint;
 
                                     <span class="symbol-cell @(isRevealed ? "revealed" : "")" data-letter="@cell.Item2">
                                         <span>@cell.Item1</span>
@@ -453,6 +454,8 @@
                     <form class="answer-form" asp-controller="Home" asp-action="Room1" asp-fragment="terminal"
                           method="post">
                         <input type="hidden" name="hintCount" value="@hintCount" />
+                        <input type="hidden" name="revealedLetters" value="@string.Join(",", revealedLetters)" />
+                        <input type="hidden" name="secretWord" value="@secretWord" />
 
                         <label for="playerAnswer">Skriv svaret h&auml;r</label>
                         <input id="playerAnswer" name="playerAnswer" value="@playerAnswer" autocomplete="off"
@@ -472,11 +475,11 @@
                             <button class="room-button" type="submit" name="actionType" value="answer">&Ouml;ppna
                                 luftsluss</button>
 
-                                @if (hintCount < 4 && !isSolved)
+                                @if (hintCount < 2 && !isSolved)
                                 {
                                     <button class="room-button secondary" id="hintButton" type="button"
                                             data-hint-count="@hintCount">
-                                        Avsl&ouml;ja ledtr&aring;d (@(4 - hintCount) kvar)
+                                        Avsl&ouml;ja ledtr&aring;d (@(2 - hintCount) kvar)
                                     </button>
                                 }
 
@@ -497,7 +500,8 @@
             <script>
                 const hintButton = document.getElementById("hintButton");
                 const hintInput = document.querySelector('input[name="hintCount"]');
-                const hintLetters = ["O", "M", "E", "T"];
+                const revealedInput = document.querySelector('input[name="revealedLetters"]');
+                const secretLetters = "@secretLetters".split(",").filter(Boolean);
 
                 function revealLetter(letter) {
                     const cell = document.querySelector(`.symbol-cell[data-letter="${letter}"]`);
@@ -513,19 +517,45 @@
                     cell.classList.add("revealed");
                 }
 
-                if (hintButton && hintInput) {
+                function getRandomHintLetter() {
+                    const availableCells = Array.from(document.querySelectorAll(".symbol-cell:not(.revealed)"))
+                        .filter((cell) => !secretLetters.includes(cell.dataset.letter));
+
+                    if (availableCells.length === 0) {
+                        return null;
+                    }
+
+                    const randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
+                    return randomCell.dataset.letter;
+                }
+
+                if (hintButton && hintInput && revealedInput) {
                     hintButton.addEventListener("click", () => {
                         let hintCount = Number(hintInput.value || "0");
 
-                        if (hintCount >= hintLetters.length) {
+                        if (hintCount >= 2) {
                             return;
                         }
 
-                        revealLetter(hintLetters[hintCount]);
+                        const letter = getRandomHintLetter();
+
+                        if (!letter) {
+                            hintButton.remove();
+                            return;
+                        }
+
+                        revealLetter(letter);
                         hintCount += 1;
                         hintInput.value = hintCount;
 
-                        const remaining = hintLetters.length - hintCount;
+                        const revealedLetters = revealedInput.value
+                            ? revealedInput.value.split(",").filter(Boolean)
+                            : [];
+
+                        revealedLetters.push(letter);
+                        revealedInput.value = revealedLetters.join(",");
+
+                        const remaining = 2 - hintCount;
 
                         if (remaining === 0) {
                             hintButton.remove();
