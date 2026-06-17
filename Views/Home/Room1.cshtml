@@ -469,7 +469,7 @@
 
                     <form class="answer-form" asp-controller="Home" asp-action="Room1" asp-fragment="terminal"
                           method="post">
-                        <input type="hidden" name="hintCount" value="@hintCount" />
+                        <input type="hidden" name="hintCount" id="hintCount" value="@hintCount" />
                         <input type="hidden" name="revealedLetters" value="@string.Join(",", revealedLetters)" />
                         <input type="hidden" name="secretWord" value="@secretWord" />
 

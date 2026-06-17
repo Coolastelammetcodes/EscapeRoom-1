@@ -29,17 +29,18 @@
     </div>
 
     <div class="space-content">
-        <p class="space-kicker">Signal detected</p>
+        <p class="space-kicker">Signal upptäckt</p>
         <h1>Escape room</h1>
         <p class="space-copy">
             Mörk rymd, främmande spår och en dörr som bara öppnas om du löser mysteriet.
         </p>
         <div class="space-actions">
             <a asp-action="Room1" class="space-start-btn">
-                Start game
+                Starta
             </a>
-            <button class="space-instructions-btn" type="button" data-bs-toggle="modal" data-bs-target="#instructionsModal">
-                Instructions
+            <button class="space-instructions-btn" type="button" data-bs-toggle="modal"
+                    data-bs-target="#instructionsModal">
+                Instruktioner
             </button>
         </div>
     </div>
@@ -49,14 +50,18 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content space-instructions">
             <div class="modal-header">
-                <h2 class="modal-title" id="instructionsTitle">How to play</h2>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h2 class="modal-title" id="instructionsTitle">Så här spelar du:</h2>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <ol>
-                    <li>Tryck på Start game för att gå in i första rummet.</li>
+                    <li>Tryck Starta → timern börjar direkt.</li>
+                    <li>Du har 5 rum att klara.</li>
                     <li>Leta efter ledtrådar i rummet.</li>
                     <li>Lös pusslet för att öppna nästa dörr.</li>
+                    <li>Om du använder en hint läggs 10–30 sekunder till, beroende på vilket rum du är i
+                    </li>
                 </ol>
             </div>
         </div>
