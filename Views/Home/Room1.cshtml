@@ -404,12 +404,29 @@
             grid-template-columns: 1fr;
         }
 
-        .alphabet-row {
-            grid-template-columns: repeat(3, minmax(2.4rem, 1fr));
-        }
-
         .button-row {
             display: grid;
+        }
+
+        .alphabet-grid {
+            gap: 0.28rem;
+        }
+
+        .alphabet-row {
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 0.22rem;
+        }
+
+        .symbol-cell {
+            min-height: 1.85rem;
+            min-width: 0;
+            gap: 0.12rem;
+            font-size: 0.85rem;
+        }
+
+        .symbol-letter {
+            padding: 0.04rem 0.16rem;
+            font-size: 0.68rem;
         }
     }
 </style>
