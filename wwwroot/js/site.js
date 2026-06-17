@@ -1,4 +1,6 @@
 ﻿document.addEventListener("DOMContentLoaded", function () {
+  const pageOpenTime = Date.now();
+
   const goToRoom2 = document.getElementById("goToRoom2");
 
   if (!goToRoom2) {
@@ -11,14 +13,10 @@
 
     const hintCount = Number(hintEl?.value || 0);
 
-    const t = Date.now() - hintCount * 15000;
+    const t = pageOpenTime - hintCount * 15000;
 
-    //console.log för att kolla att korrekt tid skickas vidare
-    console.log({
-      hintCount,
-      now: Date.now(),
-      t,
-    });
+    console.log(pageOpenTime + " pageOpenTime");
+    console.log(t + " t");
 
     window.location.href = "http://room2.runasp.net/?t=" + t;
   });
